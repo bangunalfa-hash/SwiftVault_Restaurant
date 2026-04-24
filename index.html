@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SwiftVault | Enterprise 3D Pre-Order</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ================= 1. ROLLS-ROYCE BESPOKE VARIABLES ================= */
+        :root {
+            --rr-vantablack: #000000;
+            --rr-graphite: #0a0a0a;
+            --rr-pure-silver: #e0e0e0;
+            --rr-muted-silver: #777777;
+            --rr-champagne: #C5A059;
+            --rr-line: #1a1a1a;
+            --3d-ease: cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--rr-vantablack); color: var(--rr-pure-silver); width: 100vw; height: 100dvh; overflow: hidden; }
+
+        /* ================= 2. CINEMATIC SCENE ENGINE ================= */
+        .screen {
+            position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center;
+            overflow-y: auto; overflow-x: hidden; background-color: var(--rr-vantablack);
+            opacity: 0; visibility: hidden; pointer-events: none;
+            transition: opacity 0.8s ease, visibility 0.8s; z-index: 1;
+        }
+        .screen.active { opacity: 1; visibility: visible; pointer-events: auto; z-index: 10; }
+        .screen::-webkit-scrollbar { display: none; }
+        
+        .wrapper { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100%; width: 100%; max-width: 900px; margin: 0 auto; padding: 40px 20px 120px 20px; }
+
+        /* ================= 3. TYPOGRAPHY & BUTTONS ================= */
+        h1 { font-size: clamp(1.4rem, 5vw, 2.2rem); letter-spacing: 10px; text-transform: uppercase; font-weight: 200; text-align: center; margin-bottom: 10px; color: var(--rr-pure-silver); }
+        .subtitle { font-size: 0.65rem; color: var(--rr-muted-silver); letter-spacing: 4px; text-transform: uppercase; text-align: center; font-weight: 300; margin-bottom: 30px; }
+
+        .btn { padding: 15px 30px; font-weight: 400; text-transform: uppercase; letter-spacing: 3px; font-size: 0.65rem; cursor: pointer; transition: 0.4s ease; background: transparent; border: 1px solid var(--rr-muted-silver); color: var(--rr-pure-silver); border-radius: 2px;}
+        .btn:active { background: var(--rr-pure-silver); color: var(--rr-vantablack); transform: scale(0.97); }
+        .btn-gold { border-color: var(--rr-champagne); color: var(--rr-champagne); }
+        .btn-gold:active { background: var(--rr-champagne); color: var(--rr-vantablack); }
+        .btn-disabled { opacity: 0.2; pointer-events: none; border-color: var(--rr-line); color: var(--rr-muted-silver); }
+        .action-row { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; width: 100%; margin-top: 30px; }
+
+        /* ================= 4. CLIENT PITCH (DETAILED & ANTI-MENTOK) ================= */
+        #scr-guide { background: rgba(0,0,0,0.96); z-index: 999; }
+        .brief-box { 
+            background: var(--rr-graphite); border: 1px solid var(--rr-line); padding: 35px 25px; 
+            max-width: 600px; width: 100%; text-align: left; box-shadow: 0 40px 100px rgba(0,0,0,1); border-radius: 4px; 
+            max-height: 85dvh; overflow-y: auto; 
+        }
+        .brief-box::-webkit-scrollbar { width: 4px; }
+        .brief-box::-webkit-scrollbar-thumb { background: var(--rr-champagne); }
+        
+        .brief-box h2 { font-size: 1.1rem; letter-spacing: 4px; font-weight: 400; color: var(--rr-champagne); margin-bottom: 15px; text-transform: uppercase; border-bottom: 1px solid var(--rr-line); padding-bottom: 15px; text-align: center;}
+        .brief-desc { font-size: 0.75rem; color: var(--rr-pure-silver); line-height: 1.6; font-weight: 300; margin-bottom: 25px; text-align: center;}
+        
+        .warning-box { background: rgba(197, 160, 89, 0.1); border-left: 3px solid var(--rr-champagne); padding: 15px; margin-bottom: 25px; }
+        .warning-box h4 { color: var(--rr-champagne); font-size: 0.75rem; margin-bottom: 8px; letter-spacing: 2px; text-transform: uppercase; }
+        .warning-box ul { list-style: none; padding: 0; }
+        .warning-box li { font-size: 0.65rem; color: var(--rr-pure-silver); margin-bottom: 5px; line-height: 1.5; padding-left: 15px; position: relative; }
+        .warning-box li::before { content: '•'; position: absolute; left: 0; color: var(--rr-champagne); }
+
+        .step-list { display: flex; flex-direction: column; gap: 20px; margin-bottom: 30px; }
+        .step-item { display: flex; gap: 15px; align-items: flex-start; }
+        .step-num { color: var(--rr-vantablack); background: var(--rr-pure-silver); padding: 5px 8px; font-family: monospace; font-size: 0.7rem; border-radius: 2px; font-weight: 600;}
+        .step-txt h4 { font-size: 0.8rem; color: var(--rr-pure-silver); margin-bottom: 5px; font-weight: 400; letter-spacing: 1px; text-transform: uppercase;}
+        .step-txt p { font-size: 0.7rem; color: var(--rr-muted-silver); line-height: 1.5; font-weight: 300; }
+
+        /* ================= 5. REAL 3D BOOK MENU (FIXED TABS & NO CUT-OFF) ================= */
+        .menu-top-tabs { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; width: 100%; max-width: 400px; flex-wrap: wrap;}
+        .b-tab { background: transparent; border: 1px solid var(--rr-line); color: var(--rr-muted-silver); padding: 10px 20px; font-size: 0.65rem; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: 0.3s; letter-spacing: 2px; flex: 1; text-align: center;}
+        .b-tab.active { background: var(--rr-champagne); color: #000; border-color: var(--rr-champagne); font-weight: 500;}
+
+        .book-stage { width: 100%; height: 500px; /* Ditambah tinggi agar tidak terpotong */ display: flex; justify-content: center; align-items: center; perspective: 2000px;}
+        .book { position: relative; width: 100%; max-width: 400px; height: 100%; transform-style: preserve-3d; }
+        
+        .page {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #080808; border: 1px solid var(--rr-line); border-radius: 2px 15px 15px 2px;
+            transform-origin: left center; transition: transform 0.9s var(--3d-ease), box-shadow 0.9s;
+            transform-style: preserve-3d; display: flex; flex-direction: column;
+            box-shadow: inset -10px 0 30px rgba(0,0,0,0.8), 20px 10px 40px rgba(0,0,0,0.9);
+            overflow: hidden; 
+        }
+        .page.flipped { transform: rotateY(-180deg); box-shadow: inset 10px 0 30px rgba(0,0,0,0.8); pointer-events: none; z-index: 0; }
+        .page.active { z-index: 5; }
+
+        .page-header { background: #111; padding: 15px; text-align: center; border-bottom: 1px solid var(--rr-line); }
+        .p-cat { font-size: 0.75rem; color: var(--rr-champagne); letter-spacing: 4px; text-transform: uppercase; font-weight: 400;}
+        .p-num { font-size: 0.55rem; color: var(--rr-muted-silver); font-family: monospace; margin-top: 5px; letter-spacing: 2px; }
+        
+        .page-content { padding: 5px 20px; display: flex; flex-direction: column; gap: 0; flex: 1; justify-content: center;}
+        .m-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #151515; cursor: pointer; transition: 0.3s; }
+        .m-item:last-child { border-bottom: none; }
+        .m-item:active { background: rgba(197, 160, 89, 0.05); padding-left: 5px; }
+        .m-info { flex: 1; padding-right: 15px; }
+        .m-name { font-size: 0.7rem; color: var(--rr-pure-silver); margin-bottom: 4px; font-weight: 400; text-transform: uppercase; letter-spacing: 1px;}
+        .m-desc { font-size: 0.55rem; color: var(--rr-muted-silver); line-height: 1.4; }
+        .m-price { font-size: 0.75rem; color: var(--rr-champagne); font-family: monospace; }
+
+        .book-controls { display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin-top: 25px; }
+        .ctrl-btn { background: transparent; border: 1px solid var(--rr-line); color: var(--rr-muted-silver); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; padding: 12px 20px; transition: 0.3s; border-radius: 2px;}
+        .ctrl-btn:active { color: var(--rr-vantablack); background: var(--rr-pure-silver); border-color: var(--rr-pure-silver);}
+
+        /* ================= 6. CHECKOUT BAR ================= */
+        .checkout-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(5,5,5,0.95);
+            backdrop-filter: blur(15px); border-top: 1px solid var(--rr-line); padding: 20px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 500; transform: translateY(100%); transition: transform 0.5s var(--3d-ease);
+            padding-bottom: calc(20px + env(safe-area-inset-bottom));
+        }
+        .checkout-bar.active { transform: translateY(0); }
+        .chk-amt { font-size: 1.2rem; color: var(--rr-champagne); font-family: monospace; font-weight: 300; letter-spacing: 1px; margin-top: 5px; display: block;}
+
+        /* ================= 7. ROTATING 3D TABLE (MEJA SILINDER + KURSI) ================= */
+        .stage-3d { width: 100%; height: 350px; display: flex; justify-content: center; align-items: center; perspective: 1200px; margin: 20px 0;}
+        
+        .table-assembly {
+            position: relative; width: 160px; height: 160px;
+            transform-style: preserve-3d;
+            /* Sudut Pandang Kamera 3D Isometrik yang lebih miring agar terlihat nyata */
+            transform: rotateX(65deg) rotateZ(0deg);
+            transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); /* Sangat Smooth */
+        }
+
+        /* Alas Meja (Silinder) */
+        .t-top {
+            position: absolute; inset: 0; border-radius: 50%;
+            background: radial-gradient(circle, #222 0%, #0a0a0a 100%);
+            border: 5px solid #333;
+            transform: translateZ(40px); /* Ketinggian meja */
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.9), 0 30px 50px rgba(0,0,0,0.9);
+        }
+        
+        /* Angka Meja */
+        .t-num { font-size: 3.5rem; color: var(--rr-champagne); font-family: monospace; font-weight: 300; transition: transform 0.8s; text-shadow: 0 5px 15px #000; }
+        
+        /* Tiang Penyangga Tengah */
+        .t-base {
+            position: absolute; top: 35%; left: 35%; width: 30%; height: 40px;
+            background: linear-gradient(to right, #000, #444, #000);
+            transform: translateZ(0) rotateX(90deg); transform-origin: top;
+            border-radius: 50%;
+        }
+
+        /* 4 Kursi 3D Mengelilingi Meja */
+        .chair {
+            position: absolute; width: 40px; height: 35px;
+            background: linear-gradient(180deg, #222 0%, #050505 100%); 
+            border: 2px solid #111; border-radius: 15px 15px 0 0;
+            transform-style: preserve-3d; box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+        }
+        .chair-1 { top: -45px; left: 60px; transform: translateZ(15px) rotateZ(0deg); }
+        .chair-2 { bottom: -45px; left: 60px; transform: translateZ(15px) rotateZ(180deg); }
+        .chair-3 { left: -45px; top: 60px; transform: translateZ(15px) rotateZ(-90deg); }
+        .chair-4 { right: -45px; top: 60px; transform: translateZ(15px) rotateZ(90deg); }
+
+        .nav-table { background: transparent; border: none; color: var(--rr-muted-silver); font-size: 3.5rem; cursor: pointer; padding: 20px; transition: 0.3s; }
+        .nav-table:active { color: var(--rr-champagne); transform: scale(0.9); }
+
+        /* ================= 8. REAL PHYSICAL RECEIPT (KERTAS ASLI) ================= */
+        .receipt-wrapper { filter: drop-shadow(0 30px 40px rgba(0,0,0,0.8)); margin-bottom: 30px; }
+        .real-receipt {
+            background: #f9f9f9; color: #111; font-family: 'Space Mono', monospace;
+            width: 100%; max-width: 350px; padding: 40px 25px 60px 25px; position: relative;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), 96% 100%, 92% calc(100% - 10px), 88% 100%, 84% calc(100% - 10px), 80% 100%, 76% calc(100% - 10px), 72% 100%, 68% calc(100% - 10px), 64% 100%, 60% calc(100% - 10px), 56% 100%, 52% calc(100% - 10px), 48% 100%, 44% calc(100% - 10px), 40% 100%, 36% calc(100% - 10px), 32% 100%, 28% calc(100% - 10px), 24% 100%, 20% calc(100% - 10px), 16% 100%, 12% calc(100% - 10px), 8% 100%, 4% calc(100% - 10px), 0 100%);
+            background-image: linear-gradient(to bottom, #fff 0%, #eaeaea 100%);
+        }
+        .rcpt-logo { font-size: 1.3rem; font-weight: bold; font-family: 'Montserrat', sans-serif; text-transform: uppercase; text-align: center; letter-spacing: 5px; margin-bottom: 5px; }
+        .rcpt-info { font-size: 0.65rem; color: #555; text-align: center; border-bottom: 1px dashed #999; padding-bottom: 20px; margin-bottom: 20px; }
+        .rcpt-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; max-height: 40vh; overflow-y: auto;}
+        .rcpt-list::-webkit-scrollbar { width: 0; }
+        .rcpt-item { display: flex; justify-content: space-between; font-size: 0.75rem; align-items: flex-start; }
+        .rcpt-qty { width: 30px; font-weight: bold; }
+        .rcpt-name { flex: 1; padding-right: 10px; text-transform: uppercase; }
+        .rcpt-total { display: flex; justify-content: space-between; border-top: 1px dashed #999; border-bottom: 1px dashed #999; padding: 15px 0; font-weight: bold; font-size: 0.9rem; margin-top: 10px; }
+        
+        /* ================= 9. POS DATABASE ================= */
+        .pos-tabs { display: flex; gap: 20px; justify-content: center; width: 100%; margin-bottom: 30px; border-bottom: 1px solid var(--rr-line); padding-bottom: 15px;}
+        .pos-section { display: none; width: 100%; flex-direction: column; align-items: center; animation: fadeIn 0.8s ease; }
+        .pos-section.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .table-wrap { width: 100%; overflow-x: auto; border: 1px solid var(--rr-line); background: var(--rr-surface); border-radius: 2px;}
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 650px;}
+        th { color: var(--rr-muted-silver); font-size: 0.65rem; text-transform: uppercase; padding: 25px; letter-spacing: 3px; border-bottom: 1px solid var(--rr-line); font-weight: 400; }
+        td { padding: 25px; font-size: 0.75rem; color: var(--rr-pure-silver); border-bottom: 1px solid var(--rr-line); text-transform: uppercase; letter-spacing: 1px; line-height: 1.6;}
+        .action-link { color: var(--rr-champagne); cursor: pointer; transition: 0.3s; font-weight: 500; text-decoration: underline; text-underline-offset: 4px; }
+        
+        .revenue-box { border: 1px solid var(--rr-line); padding: 70px 40px; text-align: center; width: 100%; max-width: 450px; background: var(--rr-surface); border-radius: 2px;}
+        .rev-title { font-size: 0.7rem; color: var(--rr-muted-silver); letter-spacing: 6px; text-transform: uppercase; margin-bottom: 25px; }
+        .rev-amt { font-size: clamp(2rem, 6vw, 3rem); color: var(--rr-champagne); font-family: monospace; font-weight: 300; letter-spacing: 2px;}
+    </style>
+</head>
+<body>
+
+    <div id="scr-guide" class="screen active">
+        <div class="wrapper">
+            <div class="brief-box">
+                <h2>Proposal & Protokol SwiftVault</h2>
+                <p class="brief-desc">
+                    Selamat datang. Ini adalah antarmuka <b>Dine-In Pre-Order</b> kelas dunia. Solusi ini memungkinkan pelanggan memesan menu eksklusif dan mengamankan meja secara online sebelum mereka tiba di restoran Anda.
+                </p>
+                
+                <div class="warning-box">
+                    <h4>Instruksi Penting (Mencegah Lag):</h4>
+                    <ul>
+                        <li>Pastikan Anda menggunakan browser terbaru (Chrome/Safari).</li>
+                        <li>Sistem menggunakan <i>Hardware Accelerated 3D</i>. Tutup aplikasi/tab berat di latar belakang untuk mendapatkan pengalaman super mulus (60 FPS).</li>
+                        <li>Gunakan HP dalam mode tegak (*Portrait* / Rasio 1:1) untuk proporsi UI yang sempurna.</li>
+                    </ul>
+                </div>
+
+                <div class="step-list">
+                    <div class="step-item">
+                        <span class="step-num">01</span>
+                        <div class="step-txt"><h4>90 Menu Realistis</h4><p>Pelanggan menjelajahi menu nyata (A5 Wagyu, Dom Pérignon, dll) melalui buku 3D tanpa <i>scroll</i> panjang ke bawah.</p></div>
+                    </div>
+                    <div class="step-item">
+                        <span class="step-num">02</span>
+                        <div class="step-txt"><h4>Reservasi Meja & Kursi 3D</h4><p>Setiap pemilihan meja divisualisasikan dengan meja dan kursi berputar secara spasial yang sangat halus.</p></div>
+                    </div>
+                    <div class="step-item">
+                        <span class="step-num">03</span>
+                        <div class="step-txt"><h4>Cetak Faktur (Thermal Receipt)</h4><p>Validasi pemesanan menggunakan nota fisik virtual untuk membangun kepercayaan transaksi klien.</p></div>
+                    </div>
+                    <div class="step-item">
+                        <span class="step-num">04</span>
+                        <div class="step-txt"><h4>Terminal POS Terintegrasi</h4><p>Semua pesanan otomatis terhubung ke sistem kasir (Database) untuk pelacakan pendapatan kotor Real-Time.</p></div>
+                    </div>
+                </div>
+                <button class="btn btn-gold" style="width: 100%; padding: 18px;" onclick="nav('scr-welcome')">Mengerti, Mulai Demonstrasi</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="scr-welcome" class="screen">
+        <div class="wrapper">
+            <div style="font-size: 0.65rem; color: var(--rr-champagne); letter-spacing: 15px; margin-bottom: 25px;">EST. 2026</div>
+            <h1>SwiftVault</h1>
+            <div class="subtitle">Dine-In Pre-Order System</div>
+            <div class="action-row">
+                <button class="btn" onclick="nav('scr-menu')">Buka Koleksi Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="scr-menu" class="screen">
+        <div class="wrapper" style="justify-content: flex-start; padding-top: 50px;">
+            <h1>Buku Kurasi</h1>
+            <div class="subtitle">Geser halaman untuk menjelajah</div>
+            
+            <div class="menu-top-tabs">
+                <button class="b-tab active" id="tab-food" onclick="changeCategory('food')">Kulinari</button>
+                <button class="b-tab" id="tab-drink" onclick="changeCategory('drink')">Minuman</button>
+                <button class="b-tab" id="tab-snack" onclick="changeCategory('snack')">Camilan</button>
+            </div>
+            
+            <div class="book-stage">
+                <div class="book" id="book-element">
+                    </div>
+            </div>
+
+            <div class="book-controls">
+                <button class="ctrl-btn" onclick="flipBook(-1)">&#10094; Sebelumnya</button>
+                <button class="ctrl-btn" onclick="flipBook(1)">Selanjutnya &#10095;</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="checkout-bar" id="checkout-bar">
+        <div>
+            <span style="font-size: 0.6rem; color: var(--rr-muted-silver); letter-spacing: 4px; text-transform: uppercase;">Estimasi Nilai</span>
+            <span class="chk-amt" id="cart-total-price">Rp 0</span>
+        </div>
+        <button class="btn btn-gold" style="padding: 16px 30px;" onclick="nav('scr-table')">Pilih Meja (<span id="cart-qty">0</span>)</button>
+    </div>
+
+    <div id="scr-table" class="screen">
+        <div class="wrapper">
+            <h1>Reservasi Spasial</h1>
+            <div class="subtitle">Putar untuk menentukan zona Anda</div>
+
+            <div class="stage-3d">
+                <button class="nav-table" onclick="rotateTable(-1)">&#10094;</button>
+                
+                <div class="table-assembly" id="table-assembly">
+                    <div class="chair chair-1"></div>
+                    <div class="chair chair-2"></div>
+                    <div class="chair chair-3"></div>
+                    <div class="chair chair-4"></div>
+                    <div class="t-base"></div>
+                    <div class="t-top">
+                        <span class="t-num" id="table-num-display">1</span>
+                    </div>
+                </div>
+
+                <button class="nav-table" onclick="rotateTable(1)">&#10095;</button>
+            </div>
+            
+            <div style="font-size: 0.75rem; letter-spacing: 5px; color: var(--rr-champagne); margin-bottom: 40px; margin-top: 20px; font-weight: 500;" id="table-status-text">MEJA TERSEDIA</div>
+
+            <div class="action-row">
+                <button class="btn" onclick="nav('scr-menu')">Kembali ke Menu</button>
+                <button class="btn btn-gold" onclick="nav('scr-bill')">Validasi Faktur</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="scr-bill" class="screen">
+        <div class="wrapper">
+            
+            <div class="receipt-wrapper">
+                <div class="real-receipt">
+                    <div class="rcpt-logo">SwiftVault</div>
+                    <div class="rcpt-info">
+                        PRE-ORDER DIGITAL RECORD<br>
+                        MEJA NO: <span id="rcpt-table-num" style="font-weight:bold; color:#000;">--</span>
+                    </div>
+                    
+                    <div class="rcpt-list" id="bill-container"></div>
+                    
+                    <div class="rcpt-total">
+                        <span>TOTAL</span>
+                        <span id="bill-final-price">Rp 0</span>
+                    </div>
+                    
+                    <div style="text-align: center; font-size: 0.65rem; color: #777; margin-top: 30px; line-height: 1.6;">
+                        Tunjukkan struk digital ini<br>kepada staf saat kedatangan.
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-row">
+                <button class="btn" onclick="nav('scr-table')">Ubah Keputusan</button>
+                <button class="btn btn-gold" onclick="processOrder()">Eksekusi Pesanan</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="scr-db" class="screen">
+        <div class="wrapper">
+            <h1 style="font-size: 1.6rem;">Pusat Komando</h1>
+            <div class="subtitle">Sistem Kasir (POS) & Database Real-Time</div>
+            
+            <div class="pos-tabs">
+                <button class="btn active" style="border:none; border-bottom:1px solid transparent; padding:10px;" onclick="switchPosTab('active', this)">Pesanan Berjalan</button>
+                <button class="btn" style="border:none; border-bottom:1px solid transparent; padding:10px;" onclick="switchPosTab('revenue', this)">Laporan Pendapatan</button>
+            </div>
+
+            <div id="pos-active" class="pos-section active">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ref ID</th>
+                                <th>Meja</th>
+                                <th style="width: 45%;">Rincian Transaksi</th>
+                                <th>Nilai Tagihan</th>
+                                <th>Tindakan</th>
+                            }
+                        </thead>
+                        <tbody id="db-container"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="pos-revenue" class="pos-section" style="justify-content: center; flex: 1; min-height: 40dvh;">
+                <div class="revenue-box">
+                    <div class="rev-title">Total Pendapatan Kotor</div>
+                    <div class="rev-amt" id="total-revenue-display">Rp 0</div>
+                </div>
+            </div>
+            
+            <div class="action-row" style="margin-top: auto; padding-top: 50px;">
+                <button class="btn" onclick="resetCustomerFlow()">+ Simulasi Klien Baru</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ================= 1. THE 90 REALISTIC RESTAURANT ITEMS ================= */
+        const luxuryFood = ["A5 Wagyu Ribeye", "Truffle Linguine", "Lobster Thermidor", "Foie Gras Poêlé", "Beluga Caviar Pasta", "Duck Confit", "Beef Wellington", "Saffron Risotto", "Pan-Seared Scallops", "Kurobuta Pork Chop", "Chilean Sea Bass", "Osso Buco", "Miso Black Cod", "Lamb Crown Roast", "Venison Medallions", "Coq Au Vin", "Bouillabaisse", "Pheasant Breast", "Halibut en Papillote", "Veal Oscar", "Peking Duck", "King Crab Legs", "Tomahawk Steak", "Chateaubriand", "Squid Ink Spaghetti", "Bison Ribeye", "Ostrich Fillet", "Bluefin Tuna Tartare", "Wild Boar Ragu", "Golden Leaf Sushi"];
+        const luxuryDrinks = ["Vintage Dom Pérignon", "Cristal Champagne", "Macallan 25 Years", "Hibiki Harmony", "Blue Mountain V60", "Kopi Luwak Reserve", "Earl Grey Imperial", "Sapphire Martini", "Smoked Old Fashioned", "Château Margaux", "Louis XIII Cognac", "Matcha Ceremonial", "Saffron Infused Tea", "Truffle Vodka", "Platinum Margarita", "Crystal Water", "Gold Flake Prosecco", "Aged Negroni", "Bespoke Gin Tonic", "Yuzu Citrus Splash", "Himalayan Salt Soda", "Silver Tequila Anejo", "Velvet Espresso", "Rose Petal Wine", "White Tea Peony", "Artisan Kombucha", "Spiced Rum Punch", "Cognac Alexander", "Ruby Port Wine", "Diamond Ice Whiskey"];
+        const luxurySnacks = ["Osetra Caviar Blinis", "Truffle Fries", "Gold Leaf Macaron", "Escargot de Bourgogne", "Oyster Mignonette", "Iberian Ham (Jamón)", "Wagyu Beef Sliders", "Foie Gras Terrine", "Lobster Bisque Shot", "Artisan Cheese Board", "Crispy Calamari", "Truffle Deviled Eggs", "Brie en Croûte", "Smoked Salmon Crostini", "Prosciutto Melon", "Tuna Tataki Bites", "Duck Rillettes", "Burrata & Heirloom", "Caviar Deviled Eggs", "Stuffed Mushrooms", "Crab Cakes", "Beef Carpaccio", "Gougères (Cheese Puff)", "Spicy Tuna Crisps", "Pistachio Baklava", "Valrhona Choco Tart", "Saffron Arancini", "Scallop Crudo", "Prawn Cocktail", "White Truffle Chips"];
+
+        const generateData = (namesArray, basePrice, prefix) => {
+            return namesArray.map((name, i) => ({
+                id: `${prefix.charAt(0)}${i+1}`, 
+                name: name, 
+                desc: `Premium Selection No. ${i+1}`,
+                price: basePrice + (Math.floor(Math.random() * 5) * 50000)
+            }));
+        };
+        
+        const databaseMenu = {
+            food: generateData(luxuryFood, 350000, 'Food'),
+            drink: generateData(luxuryDrinks, 150000, 'Drink'),
+            snack: generateData(luxurySnacks, 90000, 'Snack')
+        };
+
+        /* ================= 2. 3D BOOK ENGINE (ANTI KEPENTOK, 5 ITEMS PER PAGE) ================= */
+        const ITEMS_PER_PAGE = 5; 
+        let currentCategory = 'food';
+        let currentPage = 1;
+        let totalPages = 0;
+
+        function buildBook(category) {
+            currentCategory = category;
+            const items = databaseMenu[category];
+            totalPages = Math.ceil(items.length / ITEMS_PER_PAGE); 
+            currentPage = 1;
+
+            const bookEl = document.getElementById('book-element');
+            bookEl.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageItems = items.slice((i - 1) * ITEMS_PER_PAGE, i * ITEMS_PER_PAGE);
+                
+                let htmlItems = pageItems.map(item => `
+                    <div class="m-item" onclick="addCart('${item.id}', '${item.name}', ${item.price})">
+                        <div class="m-info">
+                            <div class="m-name">${item.name}</div>
+                            <div class="m-desc">${item.desc}</div>
+                        </div>
+                        <div class="m-price">${item.price.toLocaleString('id-ID')}</div>
+                    </div>
+                `).join('');
+
+                bookEl.innerHTML += `
+                    <div class="page ${i === 1 ? 'active' : ''}" id="page-${i}" style="z-index: ${totalPages - i + 1};">
+                        <div class="page-header">
+                            <div class="p-cat">${category === 'food' ? 'KULINARI' : category === 'drink' ? 'MINUMAN' : 'CAMILAN'}</div>
+                            <div class="p-num">HALAMAN ${i} DARI ${totalPages}</div>
+                        </div>
+                        <div class="page-content">${htmlItems}</div>
+                    </div>
+                `;
+            }
+            updateBookZIndex();
+        }
+
+        function changeCategory(cat) {
+            document.querySelectorAll('.b-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-${cat}`).classList.add('active');
+            buildBook(cat);
+        }
+
+        function flipBook(dir) {
+            const oldPage = currentPage;
+            currentPage += dir;
+            if(currentPage < 1) currentPage = 1;
+            if(currentPage > totalPages) currentPage = totalPages;
+
+            if(oldPage !== currentPage) updateBookZIndex();
+        }
+
+        function updateBookZIndex() {
+            for(let i = 1; i <= totalPages; i++) {
+                const p = document.getElementById(`page-${i}`);
+                p.classList.remove('active', 'flipped');
+                
+                if (i < currentPage) {
+                    p.classList.add('flipped');
+                    p.style.zIndex = i; // Tumpukan kiri
+                } else if (i === currentPage) {
+                    p.classList.add('active');
+                    p.style.zIndex = totalPages; // Paling atas kanan
+                } else {
+                    p.style.zIndex = totalPages - i; // Tumpukan bawah kanan
+                }
+            }
+        }
+
+        /* ================= 3. STATE & NAVIGATION ================= */
+        let cart = [];
+        let currentTableNum = 1;
+        let rotationAngle = 0; 
+        let db = [];
+        let occupiedTables = new Set(); 
+        let totalRevenue = 0; 
+
+        function nav(screenId) {
+            if (screenId === 'scr-table' && cart.length === 0) { alert("Sistem: Pilih setidaknya satu menu."); return; }
+            if (screenId === 'scr-bill') renderBill();
+            
+            const cartBar = document.getElementById('checkout-bar');
+            if(screenId !== 'scr-menu') cartBar.classList.remove('active');
+            else if (cart.length > 0) cartBar.classList.add('active');
+
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            setTimeout(() => {
+                document.getElementById(screenId).classList.add('active');
+                document.getElementById(screenId).scrollTo(0,0);
+            }, 600); 
+        }
+
+        /* ================= 4. CART & RECEIPT LOGIC ================= */
+        function addCart(id, name, price) {
+            let item = cart.find(x => x.id === id);
+            if(item) item.qty++; else cart.push({id, name, price, qty: 1});
+            
+            const total = cart.reduce((a,b) => a + (b.price * b.qty), 0);
+            const qty = cart.reduce((a,b) => a + b.qty, 0);
+            
+            document.getElementById('cart-total-price').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+            document.getElementById('cart-qty').innerText = qty;
+            document.getElementById('checkout-bar').classList.add('active');
+        }
+
+        function renderBill() {
+            const cont = document.getElementById('bill-container');
+            cont.innerHTML = '';
+            let total = 0;
+            cart.forEach(item => {
+                let sub = item.price * item.qty; total += sub;
+                cont.innerHTML += `
+                    <div class="rcpt-item">
+                        <span class="rcpt-qty">${item.qty}x</span>
+                        <span class="rcpt-name">${item.name}</span>
+                        <span>${sub.toLocaleString('id-ID')}</span>
+                    </div>
+                `;
+            });
+            document.getElementById('bill-final-price').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+            document.getElementById('rcpt-table-num').innerText = currentTableNum.toString().padStart(2,'0');
+        }
+
+        /* ================= 5. REAL 3D ROTATING TABLE W/ CHAIRS (ANTI LAG) ================= */
+        function rotateTable(dir) {
+            // Update Nomor
+            currentTableNum += dir;
+            if(currentTableNum > 20) currentTableNum = 1;
+            if(currentTableNum < 1) currentTableNum = 20;
+
+            // Putar Meja di Sumbu Z
+            rotationAngle += (dir * -90); // Berputar 90 derajat tiap klik dengan Hardware Acceleration
+            
+            const assembly = document.getElementById('table-assembly');
+            const numDisplay = document.getElementById('table-num-display');
+            
+            // Putar keseluruhan meja (Parent)
+            assembly.style.transform = `rotateX(65deg) rotateZ(${rotationAngle}deg)`;
+            
+            // Putar angka berlawanan arah agar tetap tegak terbaca (Child)
+            numDisplay.style.transform = `rotateZ(${-rotationAngle}deg)`;
+            numDisplay.innerText = currentTableNum;
+
+            validateTableStatus();
+        }
+
+        function validateTableStatus() {
+            const statusText = document.getElementById('table-status-text');
+            if (occupiedTables.has(currentTableNum)) {
+                statusText.innerText = `MEJA ${currentTableNum.toString().padStart(2,'0')} SEDANG DIGUNAKAN`;
+                statusText.style.color = "var(--rr-danger)";
+            } else {
+                statusText.innerText = `MEJA ${currentTableNum.toString().padStart(2,'0')} TERSEDIA`;
+                statusText.style.color = "var(--rr-champagne)";
+            }
+        }
+
+        /* ================= 6. POS DATABASE SYSTEM ================= */
+        function processOrder() {
+            if(occupiedTables.has(currentTableNum)) {
+                alert("Meja ini sedang digunakan. Silakan putar dan pilih meja lain.");
+                nav('scr-table');
+                return;
+            }
+
+            const ref = 'ORD-' + Math.floor(Math.random() * 90000 + 10000);
+            const total = cart.reduce((a,b) => a + (b.price * b.qty), 0);
+            const menuStr = cart.map(x => `<span style="color:#888;">${x.qty}x</span> ${x.name}`).join('<br>');
+            
+            db.push({ id: ref, table: currentTableNum, detail: menuStr, total: total });
+            occupiedTables.add(currentTableNum); 
+            
+            renderDB();
+            nav('scr-db');
+        }
+
+        function switchPosTab(tabName, btn) {
+            document.querySelectorAll('.pos-tabs .btn').forEach(b => { b.style.borderColor = 'transparent'; b.style.color = 'var(--rr-muted-silver)'; });
+            btn.style.borderBottom = '1px solid var(--rr-pure-silver)'; btn.style.color = 'var(--rr-pure-silver)';
+
+            document.querySelectorAll('.pos-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('pos-' + tabName).classList.add('active');
+        }
+
+        function renderDB() {
+            const cont = document.getElementById('db-container');
+            cont.innerHTML = '';
+            
+            if(db.length === 0) {
+                cont.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:50px; color:var(--rr-muted-silver);">SISTEM SIAGA.</td></tr>`;
+            } else {
+                [...db].reverse().forEach((row) => {
+                    cont.innerHTML += `
+                        <tr>
+                            <td style="font-family: monospace; color: var(--rr-muted-silver);">${row.id}</td>
+                            <td style="color:var(--rr-white); font-weight:500; font-size:1rem;">T-${row.table.toString().padStart(2,'0')}</td>
+                            <td style="line-height:1.6;">${row.detail}</td>
+                            <td style="font-family:monospace; color:var(--rr-champagne);">${row.total.toLocaleString('id-ID')}</td>
+                            <td><span class="action-link" onclick="clearOrder('${row.id}', ${row.table}, ${row.total})">SELESAIKAN</span></td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        function clearOrder(orderId, tableNum, amount) {
+            db = db.filter(x => x.id !== orderId);
+            occupiedTables.delete(tableNum); 
+            
+            totalRevenue += amount;
+            document.getElementById('total-revenue-display').innerText = `Rp ${totalRevenue.toLocaleString('id-ID')}`;
+            renderDB();
+        }
+
+        function resetCustomerFlow() {
+            cart = []; 
+            document.getElementById('cart-qty').innerText = "0";
+            document.getElementById('cart-total-price').innerText = "Rp 0";
+            document.getElementById('checkout-bar').classList.remove('active');
+            
+            // Reset Buku ke Kategori Awal
+            changeCategory('food');
+            
+            const btnDb = document.querySelectorAll('.pos-tabs .btn')[0];
+            switchPosTab('active', btnDb);
+
+            nav('scr-welcome');
+        }
+
+        // Init App
+        buildBook('food');
+    </script>
+</body>
+</html>
